@@ -1,37 +1,38 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, World!"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, name: str = "unknown"):
-    return {"item_id": item_id, "name": name}
-
-# Path parameter — part of the URL
-@app.get("/users/{user_id}")
-def get_user(user_id: int):
-    return {"user_id": user_id}
-
-# Query parameter — comes after ?
-@app.get("/search")
-def search(keyword: str, limit: int = 10):
-    return {"keyword": keyword, "limit": limit}
-    # Call: /search?keyword=python&limit=5
-
-@app.get("/posts/{post_id}/comments")
-def get_comments(post_id: int, limit: int = 5):
-    return {"post_id": post_id, "limit": limit}
-
-from pydantic import BaseModel
+# In-memory "database"
+items = {}
 
 class Item(BaseModel):
     name: str
     price: float
-    in_stock: bool = True   # default value
 
-@app.post("/items/")
-def create_item(item: Item):
-    return {"received": item.name, "price": item.price}
+# CREATE
+@app.post("/items/{item_id}")
+def create_item(item_id: int, item: Item):
+    if item_id in items:
+        raise HTTPException(status_code=400, detail="Item already exists")
+    items[item_id] = item
+    return item
+
+# READ
+@app.get("/items/{item_id}")
+def get_item(item_id: int):
+    if item_id not in items:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return items[item_id]
+
+# UPDATE
+@app.put("/items/{item_id}")
+def update_item(item_id: int, item: Item):
+    items[item_id] = item
+    return item
+
+# DELETE
+@app.delete("/items/{item_id}")
+def delete_item(item_id: int):
+    items.pop(item_id, None)
+    return {"message": "deleted"}
