@@ -36,3 +36,5 @@ def update_item(item_id: int, item: Item):
 def delete_item(item_id: int):
     items.pop(item_id, None)
     return {"message": "deleted"}
+
+print("hello")
