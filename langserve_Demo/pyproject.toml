@@ -1,0 +1,17 @@
+[project]
+name = "langserve-demo"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.135.3",
+    "langchain>=1.2.15",
+    "langchain-core>=1.2.26",
+    "langchain-ollama>=1.0.1",
+    "langserve>=0.3.3",
+    "ollama>=0.6.1",
+    "requests>=2.33.1",
+    "sse-starlette>=3.3.4",
+    "uvicorn>=0.43.0",
+]
